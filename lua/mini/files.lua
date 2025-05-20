@@ -838,16 +838,16 @@ end
 ---@return boolean Whether synchronization was done.
 MiniFiles.synchronize = function()
   local explorer = H.explorer_get()
-  if explorer == nil then return end
+  if explorer == nil then return false end
 
   -- Parse and apply file system operations
   local fs_actions = H.explorer_compute_fs_actions(explorer)
-  if fs_actions ~= nil then
-    local msg = table.concat(H.fs_actions_to_lines(fs_actions), '\n')
-    local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
-    if confirm_res == 3 then return false end
-    if confirm_res == 1 then H.fs_actions_apply(fs_actions) end
-  end
+  if fs_actions == nil then return false end
+
+  local msg = table.concat(H.fs_actions_to_lines(fs_actions), '\n')
+  local confirm_res = vim.fn.confirm(msg, '&Yes\n&No\n&Cancel', 1, 'Question')
+  if confirm_res == 3 then return false end
+  if confirm_res == 1 then H.fs_actions_apply(fs_actions) end
 
   H.explorer_refresh(explorer, { force_update = true })
   return true
